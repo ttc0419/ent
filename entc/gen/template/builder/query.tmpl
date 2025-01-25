@@ -46,13 +46,13 @@ func ({{ $receiver }} *{{ $builder }}) Where(ps ...predicate.{{ $.Name }}) *{{ $
 }
 
 // Limit the number of records to be returned by this query.
-func ({{ $receiver }} *{{ $builder }}) Limit(limit int) *{{ $builder }} {
+func ({{ $receiver }} *{{ $builder }}) Limit(limit uint32) *{{ $builder }} {
 	{{ $receiver }}.ctx.Limit = &limit
 	return {{ $receiver }}
 }
 
 // Offset to start from.
-func ({{ $receiver }} *{{ $builder }}) Offset(offset int) *{{ $builder }} {
+func ({{ $receiver }} *{{ $builder }}) Offset(offset uint64) *{{ $builder }} {
 	{{ $receiver }}.ctx.Offset = &offset
 	return {{ $receiver }}
 }
@@ -238,16 +238,16 @@ func ({{ $receiver }} *{{ $builder }}) AllX(ctx context.Context) []*{{ $.Name }}
 {{ end }}
 
 // Count returns the count of the given query.
-func ({{ $receiver }} *{{ $builder }}) Count(ctx context.Context) (int, error) {
+func ({{ $receiver }} *{{ $builder }}) Count(ctx context.Context) (uint64, error) {
 	ctx = setContextOp(ctx, {{ $receiver }}.ctx, ent.OpQueryCount)
 	if err := {{ $receiver }}.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, {{ $receiver }}, querierCount[*{{ $builder }}](), {{ $receiver }}.inters)
+	return withInterceptors[uint64](ctx, {{ $receiver }}, querierCount[*{{ $builder }}](), {{ $receiver }}.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func ({{ $receiver }} *{{ $builder }}) CountX(ctx context.Context) int {
+func ({{ $receiver }} *{{ $builder }}) CountX(ctx context.Context) uint64 {
 	count, err := {{ $receiver }}.Count(ctx)
 	if err != nil {
 		panic(err)
