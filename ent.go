@@ -525,10 +525,10 @@ type (
 		Unique *bool
 		// Limit indicates if the Limit modifier was set on the query and
 		// its value. Calling Limit(10) sets the value of Limit to 10.
-		Limit *int
+		Limit *uint32
 		// Offset indicates if the Offset modifier was set on the query and
 		// its value. Calling Offset(10) sets the value of Offset to 10.
-		Offset *int
+		Offset *uint64
 		// Fields specifies the fields that were selected in the query.
 		Fields []string
 	}

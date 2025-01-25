@@ -1687,8 +1687,8 @@ type Selector struct {
 	order     []any
 	group     []string
 	having    *Predicate
-	limit     *int
-	offset    *int
+	limit     *uint32
+	offset    *uint64
 	distinct  bool
 	setOps    []setOp
 	prefix    Queries
@@ -1923,13 +1923,13 @@ func (s *Selector) SetDistinct(v bool) *Selector {
 }
 
 // Limit adds the `LIMIT` clause to the `SELECT` statement.
-func (s *Selector) Limit(limit int) *Selector {
+func (s *Selector) Limit(limit uint32) *Selector {
 	s.limit = &limit
 	return s
 }
 
 // Offset adds the `OFFSET` clause to the `SELECT` statement.
-func (s *Selector) Offset(offset int) *Selector {
+func (s *Selector) Offset(offset uint64) *Selector {
 	s.offset = &offset
 	return s
 }
@@ -2571,11 +2571,11 @@ func (s *Selector) Query() (string, []any) {
 	joinOrder(s.order, &b)
 	if s.limit != nil {
 		b.WriteString(" LIMIT ")
-		b.WriteString(strconv.Itoa(*s.limit))
+		b.WriteString(strconv.FormatUint(uint64(*s.limit), 10))
 	}
 	if s.offset != nil {
 		b.WriteString(" OFFSET ")
-		b.WriteString(strconv.Itoa(*s.offset))
+		b.WriteString(strconv.FormatUint(*s.offset, 10))
 	}
 	s.joinLock(&b)
 	s.total = b.total

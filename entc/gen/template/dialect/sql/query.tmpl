@@ -261,7 +261,7 @@ func ({{ $receiver }} *{{ $builder }}) sqlAll(ctx context.Context, hooks ...quer
 	}
 {{- end }}
 
-func ({{ $receiver }} *{{ $builder }}) sqlCount(ctx context.Context) (int, error) {
+func ({{ $receiver }} *{{ $builder }}) sqlCount(ctx context.Context) (uint64, error) {
 	_spec := {{ $receiver }}.querySpec()
 	{{- /* Allow mutating the sqlgraph.QuerySpec by ent extensions or user templates. */}}
 	{{- with $tmpls := matchTemplate "dialect/sql/query/spec/*" }}
@@ -386,7 +386,7 @@ func ({{ $receiver }} *{{ $builder }}) sqlQuery(ctx context.Context) *sql.Select
 	if offset := {{ $receiver }}.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
-		selector.Offset(*offset).Limit(math.MaxInt32)
+		selector.Offset(*offset).Limit(math.MaxUint8)
 	}
 	if limit := {{ $receiver }}.ctx.Limit; limit != nil {
 		selector.Limit(*limit)

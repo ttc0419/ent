@@ -911,8 +911,8 @@ type QuerySpec struct {
 	Node *NodeSpec     // Nodes info.
 	From *sql.Selector // Optional query source (from path).
 
-	Limit     int
-	Offset    int
+	Limit     uint32
+	Offset    uint64
 	Unique    bool
 	Order     func(*sql.Selector)
 	Predicate func(*sql.Selector)
@@ -941,7 +941,7 @@ func QueryNodes(ctx context.Context, drv dialect.Driver, spec *QuerySpec) error 
 }
 
 // CountNodes counts the nodes in the given graph query.
-func CountNodes(ctx context.Context, drv dialect.Driver, spec *QuerySpec) (int, error) {
+func CountNodes(ctx context.Context, drv dialect.Driver, spec *QuerySpec) (uint64, error) {
 	builder := sql.Dialect(drv.Dialect())
 	qr := &query{graph: graph{builder: builder}, QuerySpec: spec}
 	return qr.count(ctx, drv)
@@ -1029,7 +1029,7 @@ func (q *query) nodes(ctx context.Context, drv dialect.Driver) error {
 	return rows.Err()
 }
 
-func (q *query) count(ctx context.Context, drv dialect.Driver) (int, error) {
+func (q *query) count(ctx context.Context, drv dialect.Driver) (uint64, error) {
 	rows := &sql.Rows{}
 	selector, err := q.selector(ctx)
 	if err != nil {
@@ -1060,7 +1060,7 @@ func (q *query) count(ctx context.Context, drv dialect.Driver) (int, error) {
 		return 0, err
 	}
 	defer rows.Close()
-	return sql.ScanInt(rows)
+	return sql.ScanUint64(rows)
 }
 
 func (q *query) selector(ctx context.Context) (*sql.Selector, error) {
@@ -1081,7 +1081,7 @@ func (q *query) selector(ctx context.Context) (*sql.Selector, error) {
 	if q.Offset != 0 {
 		// Limit is mandatory for the offset clause. We start
 		// with default value, and override it below if needed.
-		selector.Offset(q.Offset).Limit(math.MaxInt32)
+		selector.Offset(q.Offset).Limit(math.MaxUint32)
 	}
 	if q.Limit != 0 {
 		selector.Limit(q.Limit)
