@@ -355,7 +355,7 @@ func querierAll[V Value, Q interface {
 }
 
 func querierCount[Q interface {
-	{{ $.Storage }}Count(context.Context) (int, error)
+	{{ $.Storage }}Count(context.Context) (uint64, error)
 }]() Querier {
 	return QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
 		query, ok := q.(Q)
