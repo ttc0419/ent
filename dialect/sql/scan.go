@@ -47,6 +47,15 @@ func ScanInt64(rows ColumnScanner) (int64, error) {
 	return n, nil
 }
 
+// ScanUint64 scans and returns an int64 from the rows.
+func ScanUint64(rows ColumnScanner) (uint64, error) {
+	var n uint64
+	if err := ScanOne(rows, &n); err != nil {
+		return 0, err
+	}
+	return n, nil
+}
+
 // ScanInt scans and returns an int from the rows.
 func ScanInt(rows ColumnScanner) (int, error) {
 	n, err := ScanInt64(rows)
