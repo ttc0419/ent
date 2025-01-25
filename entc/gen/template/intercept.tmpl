@@ -129,8 +129,8 @@ func NewQuery(q {{ $pkg }}.Query) (Query, error) {
 type query[T any, P ~func({{ $.Storage.Builder }}), R ~func({{ $.Storage.Builder }})] struct {
 	typ string
 	tq  interface {
-		Limit(int) T
-		Offset(int) T
+		Limit(uint32) T
+		Offset(uint64) T
 		Unique(bool) T
 		Order(...R) T
 		Where(...P) T
@@ -141,11 +141,11 @@ func (q query[T, P, R]) Type() string {
 	return q.typ
 }
 
-func (q query[T, P, R]) Limit(limit int) {
+func (q query[T, P, R]) Limit(limit uint32) {
 	q.tq.Limit(limit)
 }
 
-func (q query[T, P, R]) Offset(offset int) {
+func (q query[T, P, R]) Offset(offset uint64) {
 	q.tq.Offset(offset)
 }
 
