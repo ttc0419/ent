@@ -14,6 +14,7 @@ in the LICENSE file in the root directory of this source tree.
 {{ template "import" $ }}
 
 import (
+	"errors"
 	"reflect"
 	{{- range $n := $.Nodes }}
 		{{ $n.PackageAlias }} "{{ $n.Config.Package }}/{{ $n.PackageDir }}"
@@ -63,6 +64,29 @@ func TxFromContext(ctx context.Context) *Tx {
 // NewTxContext returns a new context with the given Tx attached.
 func NewTxContext(parent context.Context, tx *Tx) context.Context {
 	return context.WithValue(parent, txCtxKey{}, tx)
+}
+
+// WithTx wraps a function in a transaction.
+func WithTx[T any](ctx context.Context, client *Client, fn func(tx *Tx) (T, error)) (res T, err error) {
+	var tx *Tx
+	tx, err = client.Tx(ctx)
+	if err != nil {
+		return
+	}
+
+	defer func() {
+		if v := recover(); v != nil {
+			err = errors.Join(err, errors.New(fmt.Sprintf("%v", v)), tx.Rollback())
+		}
+	}()
+
+	res, err = fn(tx)
+	if err != nil {
+		err = errors.Join(err, tx.Rollback())
+		return
+	}
+
+	return res, tx.Commit()
 }
 
 {{ $tmpl := printf "dialect/%s/order/signature" $.Storage }}
